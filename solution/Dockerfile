@@ -9,6 +9,6 @@ COPY . .
 
 ENV SERVER_PORT=8080
 
-RUN chmod +x /start.sh
+RUN chmod +x ./start.sh
 
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["./start.sh"]
