@@ -17,9 +17,6 @@ Base = declarative_base(
     )
 )
 
-# FOR DEBUGGING DURING MIGRATIONS
-print("", "", "os.getenv", os.getenv("POSTGRES_CONN"), "", "os.environ", os.environ["POSTGRES_CONN"], "", "", sep="\n")
-
 engine = create_engine(
     os.environ["POSTGRES_CONN"].replace("postgres://", "postgresql://"),
     pool_pre_ping=True,

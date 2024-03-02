@@ -9,6 +9,6 @@ COPY . .
 
 ENV SERVER_PORT=8080
 
-RUN python3 -m alembic upgrade head
+RUN chmod +x /start.sh
 
-CMD ["sh", "-c", "exec python3 -m uvicorn app:app --host=0.0.0.0 --port=$SERVER_PORT"]
+ENTRYPOINT ["/start.sh"]
