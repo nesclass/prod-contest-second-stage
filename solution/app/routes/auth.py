@@ -1,7 +1,4 @@
-from typing import List, Union, Sequence
-from typing_extensions import Annotated
-
-from fastapi import APIRouter, Query, Depends, HTTPException
+from fastapi import APIRouter, Depends, Response
 
 from app.exceptions import APIError
 from app.utils import generate_token
@@ -12,7 +9,7 @@ from app.schemas.user import UserSchema, RegisterForm, RegisterSchema, LoginForm
 router = APIRouter()
 
 
-@router.post("/api/auth/register")
+@router.post("/api/auth/register", status_code=201)
 def register_handler(
     form: RegisterForm,
     user_repository: UserRepository = Depends(get_user_repository),
@@ -33,9 +30,9 @@ def register_handler(
         image=form.image    
     )
     
-    return RegisterSchema(
+    return Response(content=RegisterSchema(
         profile=UserSchema.model_validate(user)
-    )
+    ), status_code=201)
 
 
 @router.post("/api/auth/sign-in")
