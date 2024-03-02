@@ -9,4 +9,6 @@ COPY . .
 
 ENV SERVER_PORT=8080
 
+RUN python3 -m alembic upgrade head
+
 CMD ["sh", "-c", "exec python3 -m flask run --host=0.0.0.0 --port=$SERVER_PORT"]
