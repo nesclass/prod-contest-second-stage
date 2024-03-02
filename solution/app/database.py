@@ -20,7 +20,7 @@ Base = declarative_base(
 engine = create_engine(
     os.environ["POSTGRES_CONN"].replace("postgres://", "postgresql://"),
     pool_pre_ping=True,
-    echo=True
+    echo=False
 )
 
 session_maker = sessionmaker(
