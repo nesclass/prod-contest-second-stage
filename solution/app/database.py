@@ -18,7 +18,10 @@ Base = declarative_base(
 )
 
 engine = create_engine(
-    os.environ["POSTGRES_CONN"].replace("postgres://", "postgresql://"),
+    os.getenv(
+        "POSTGRES_CONN".replace("postgres://", "postgresql://"),
+        default="postgresql://postgres:postgres@127.0.0.1:5432/prod"
+    ),
     pool_pre_ping=True,
     echo=False
 )

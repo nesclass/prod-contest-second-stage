@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 
 from app.exceptions import APIError
 from app.utils import generate_token
@@ -30,9 +31,7 @@ def register_handler(
         image=form.image    
     )
     
-    return Response(content=RegisterSchema(
-        profile=UserSchema.model_validate(user)
-    ), status_code=201)
+    return RegisterSchema(profile=UserSchema.model_validate(user))
 
 
 @router.post("/api/auth/sign-in")
