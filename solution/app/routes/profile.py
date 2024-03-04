@@ -14,12 +14,12 @@ from app.schemas.user import UserSchema, ProfileForm, UserLogin, UpdatePasswordF
 router = APIRouter()
 
 
-@router.get("/api/me/profile")
+@router.get("/api/me/profile", response_model_exclude_none=True)
 def profile_get_handler(user: User = Depends(authenticate_user_token)) -> UserSchema:
     return UserSchema.model_validate(user)
 
 
-@router.patch("/api/me/profile")
+@router.patch("/api/me/profile", response_model_exclude_none=True)
 def profile_patch_handler(
     form: ProfileForm,
     user: User = Depends(authenticate_user_token),
@@ -40,7 +40,7 @@ def profile_patch_handler(
     return UserSchema.model_validate(user)
 
 
-@router.get("/api/profile/{login}")
+@router.get("/api/profile/{login}", response_model_exclude_none=True)
 def find_profile_handler(
     target_login: UserLogin = Query(..., alias="login"),
     user: User = Depends(authenticate_user_token),

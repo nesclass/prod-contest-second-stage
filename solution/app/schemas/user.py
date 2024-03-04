@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 from typing import Optional
 from typing_extensions import Annotated
@@ -34,9 +34,24 @@ class ProfileForm(BaseModel):
 
 
 class RegisterForm(UserSchema):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", regex_engine="python-re")
     
-    password: UserPassword = Field(description="Пароль пользователя")  # TODO: validator
+    password: UserPassword = Field(description="Пароль пользователя")
+    
+    @field_validator("password")
+    def check_password(cls, value):
+        # convert the password to a string if it is not already
+        value = str(value)
+        # check that the password has at least 8 characters, one uppercase letter, one lowercase letter, and one digit
+        if len(value) < 8:
+            raise ValueError("Password must have at least 8 characters")
+        if not any(c.isupper() for c in value):
+            raise ValueError("Password must have at least one uppercase letter")
+        if not any(c.islower() for c in value):
+            raise ValueError("Password must have at least one lowercase letter")
+        if not any(c.isdigit() for c in value):
+            raise ValueError("Password must have at least one digit")
+        return value
 
 
 class RegisterSchema(BaseModel):

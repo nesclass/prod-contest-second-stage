@@ -10,7 +10,7 @@ from app.schemas.user import UserSchema, RegisterForm, RegisterSchema, LoginForm
 router = APIRouter()
 
 
-@router.post("/api/auth/register", status_code=201)
+@router.post("/api/auth/register", status_code=201, response_model_exclude_none=True)
 def register_handler(
     form: RegisterForm,
     user_repository: UserRepository = Depends(get_user_repository),

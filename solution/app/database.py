@@ -34,7 +34,7 @@ session_maker = sessionmaker(
 
 
 def init_database():
-    from app.models import country  # noqa: F401
+    from app.models import country, user, friendship, post  # noqa: F401
 
 
 def get_session() -> Iterator[Session]:

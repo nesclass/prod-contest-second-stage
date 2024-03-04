@@ -10,6 +10,7 @@ from app.routes.country import router as country_router
 from app.routes.auth import router as auth_router
 from app.routes.profile import router as profile_router
 from app.routes.friend import router as friend_router
+from app.routes.post import router as post_router
 
 app = FastAPI()
 
@@ -18,6 +19,7 @@ app.include_router(country_router)
 app.include_router(auth_router)
 app.include_router(profile_router)
 app.include_router(friend_router)
+app.include_router(post_router)
 
 
 @app.on_event("startup")
@@ -36,6 +38,6 @@ def api_error_handler(request: Request, error: APIError):
 @app.exception_handler(RequestValidationError)
 def request_validation_error_handler(request: Request, error: RequestValidationError):
     return JSONResponse(
-        content={"reason": "422 Unprocessable entity"},
+        content={"reason": str(error)},
         status_code=400
     )

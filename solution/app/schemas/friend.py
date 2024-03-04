@@ -6,7 +6,7 @@ from app.schemas.user import UserLogin
 
 class FriendshipSchema(BaseModel):
     login: UserLogin
-    added_at: datetime
+    added_at: datetime = Field(alias="addedAt")
 
 
 class AddFriendForm(BaseModel):
