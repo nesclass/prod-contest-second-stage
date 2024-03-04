@@ -1,3 +1,6 @@
+import json
+import base64
+
 from math import floor
 from binascii import crc32
 from datetime import datetime
@@ -48,6 +51,27 @@ def authenticate_user_token(
 
 
 def generate_token(login: str, password: str) -> str:
+    data = json.dumps({
+        "login": login,
+        "password": password,
+        "timestamp": "{:.0f}".format(datetime.utcnow().timestamp())
+    })
+    
+    return "$$$" + base64.b64encode(data.encode("utf-8")).decode("utf-8")
+
+
+def parse_token(token: str) -> Optional[Tuple[str, int, str]]:
+    if not token.startswith("$$$"):
+        return None, -1, None
+    
+    content = base64.b64decode(token[3:].encode("utf-8")).decode("utf-8")
+    data = json.loads(content)
+    
+    return data["login"], int(data["timestamp"]), data["password"]
+
+
+"""
+def generate_token(login: str, password: str) -> str:
     # token format: login:str, timestamp:int, password:str
     data = TOKEN_SEPARATOR.join([login, "{:.0f}".format(datetime.utcnow().timestamp()), password])
     return data + TOKEN_SEPARATOR + hex(crc32(data.encode("utf-8")))[2:]
@@ -67,3 +91,4 @@ def parse_token(token: str) -> Optional[Tuple[str, int, str]]:
         return None, -1, None
     
     return parts[0], int(parts[1]), TOKEN_SEPARATOR.join(parts[2:-1])
+"""
