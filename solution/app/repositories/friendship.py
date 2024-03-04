@@ -1,8 +1,9 @@
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Sequence
 from fastapi import Depends
+from datetime import datetime
 
-from sqlalchemy import select, delete
-from sqlalchemy.orm import Session
+from sqlalchemy import select, delete, update, insert, desc
+from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_session
 from app.models.friendship import Friendship
@@ -24,13 +25,38 @@ class FriendshipRepository:
         stmt = select(Friendship).where(Friendship.user_id == user_id, Friendship.target_id == target_id).limit(1)
         return self.session.scalar(stmt)
 
-    def create(self, user_id: int, target_id: int) -> Friendship:
-        friendship = Friendship(user_id=user_id, target_id=target_id)
-        self.session.add(friendship)
+    def update_or_insert(self, user_id: int, target_id: int) -> None:
+        # friendship = Friendship(user_id=user_id, target_id=target_id)
+        # self.session.add(friendship)
+        # self.session.commit()
+        # return friendship
+        stmt = update(Friendship) \
+            .returning(Friendship) \
+            .where(Friendship.user_id == user_id, Friendship.target_id == target_id) \
+            .values(added_at=datetime.now())
+        
+        if self.session.execute(stmt).first() is None:
+            stmt = insert(Friendship).values(
+                user_id=user_id,
+                target_id=target_id,
+                added_at=datetime.now()
+            )
+            
+            self.session.execute(stmt)
+        
         self.session.commit()
-        return friendship
     
-    def remove(self, user_id: int, target_id: int):
+    def delete(self, user_id: int, target_id: int):
         stmt = delete(Friendship).where(Friendship.user_id == user_id, Friendship.target_id == target_id)
         self.session.execute(stmt)
         self.session.commit()
+        
+    def find_and_paginate(self, user_id: int, limit: int = 5, offset: int = 0) -> Sequence[Friendship]:
+        stmt = select(Friendship) \
+            .where(Friendship.user_id == user_id) \
+            .order_by(desc(Friendship.added_at)) \
+            .limit(limit) \
+            .offset(offset) \
+            .options(selectinload(Friendship.target))
+            
+        return self.session.scalars(stmt).fetchall()
